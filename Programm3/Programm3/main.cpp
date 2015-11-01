@@ -2,10 +2,14 @@
 #include <iostream>
 #include <string>
 #include <iomanip> 
+#include <stdlib.h>
+#include <math.h>
+//#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
 const int NUMBERS_WIDTH = 9;
+const int k = 2;
 
 int CreateArray (string** &arr, int amount_str, int amount_col);
 int DetermineStrCol (int &amount_str, int &amount_col);
@@ -15,12 +19,14 @@ int CreateNewFileStr (string** arr, bool* numbers_str, int amount_str, int amoun
 int CreateNewFileColStr (string** arr, bool* numbers_col, bool* numbers_str, int amount_str, int amount_col);
 int InputColNumbers (bool* numbers_col, int amount_col);
 int InputStrNumbers (bool* numbers_str, int amount_str);
-int InputStepEps (int &step, int &eps);
-int CreateNewFileStep(string** arr, int step, int eps, int amount_col, int amount_str);
+int InputStepEps (int &step, double &eps, int &num_col);
+//int CreateNewFileStep(string** arr, int step, double eps, int amount_col, int amount_str, int k);
+int CreateNewFileStep(string** arr, int amount_str, int amount_col, int step, int col_number, double eps);
 
 int main()
 {
-	int amount_str = 0, amount_col = 0, step = 0, eps = 0;
+	int amount_str = 0, amount_col = 0, step = 0, num_col = 0;
+	double eps = 0;
 	setlocale(LC_ALL, "rus");
 	string** arr;
 
@@ -50,7 +56,8 @@ int main()
 		}
 	case 2:
 		{	
-			InputStepEps(step, eps);
+			InputStepEps(step, eps, num_col);
+			CreateNewFileStep(arr, step, eps, amount_col, amount_str, num_col);
 			/*InputStrNumbers(numbers_str, amount_str);
 			CreateNewFileStr(arr, numbers_str, amount_str, amount_col);*/
 			break;
@@ -205,24 +212,99 @@ int InputStrNumbers (bool* numbers_str, int amount_str)
 	numbers_str[0] = true;
 	return 0;
 }
-int InputStepEps (int &step, int &eps)
+int InputStepEps (int &step, double &eps, int &num_col)
 {
-	cout << endl << "Введите нужных строк и погрешность (через пробел)." << endl << "Для завершения ввода номеров строк введите любую букву." << endl;
-	cin >> step >> eps;
+	cout << endl << "Введите нужных строк, погрешность и номер слобца, по которому проверять (через пробел)." << endl << "Для завершения ввода номеров строк введите любую букву." << endl;
+	cin >> step >> eps >> num_col;
 	return 0;
 }
-int CreateNewFileStep(string** arr, int step, int eps, int amount_col, int amount_str)
+int CreateNewFileStep(string** arr, int amount_str, int amount_col, int step, int col_number, double eps) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
-	for ( int i = 0; i < amount_col; i++ )
-	{
-		fin << setw(NUMBERS_WIDTH) << arr[0][i];
-	}
 	ofstream fin("new_test.txt");
 	fin.clear();
 
-	for ( int i = 0; i < step-2; i++ )
+	for ( int j = 0; j < amount_col; j++ )
+		fin << sew(NUMBER_WIDTH) << arr[0][j];
+
+	int ptr_tek_el = 0; //указатель на текущий элемент(для сравнения и печати)
+	int i = 0;
+	while ( i != amount_str )
 	{
-		
+		int perem;
+		int j = ptr_tek_el + 1;
+		while ( j = ptr_tek_el + step )
+		{
+			if ( abs(arr[j][col_number] - arr[ptr_tek_el][col_number] > eps ) )
+			{
+				for ( k = 0; k < amount_col; k++ )
+					fin << sew(NUMBER_WIDTH) << arr[j][k];
+				perem = j;
+				j = ptr_tek_el + strp;
+			}
+			else 
+				j++;
+			
+		}
+		ptr_tek_el = perem;
+
+		i++;
 	}
+
+	fin.close();
 	return 0;
 }
+//int CreateNewFileStep(string** arr, int step, double eps, int amount_col, int amount_str, int k)
+//{
+//	ofstream fin("new_test.txt");
+//	fin.clear();
+//
+//	for ( int i = 0; i < amount_col; i++ )
+//	{
+//		fin << setw(NUMBERS_WIDTH) << arr[0][i];
+//	}
+//	fin << endl;
+//
+//	int number_col_from = 1, number_col_to;
+//	for ( int i = 1; i < step-1; i++ )
+//	{
+//		double temp_value;
+//		
+//		number_col_to = amount_col/(step-1)*i;
+//		double value_col_to = ::strtod(arr[number_col_to][k].c_str(), 0);
+//		//double value_col_from = (double)atof(arr[number_col_from][k]);
+//		double value_col_from = ::strtod(arr[number_col_from][k].c_str(), 0);
+//		//::strtod(num.c_str(), 0)
+//		double temp_max = 0;
+//		int number_diff = 0;
+//		for ( int j = number_col_from+1; j < number_col_to; j++ )
+//		{
+//			temp_value = ::strtod(arr[j][k].c_str(), 0);
+//			if ( abs(temp_value - value_col_to) > temp_max)
+//			{
+//				temp_max = abs(temp_value - value_col_to);
+//				number_diff = j;
+//			}
+//			if ( abs(temp_value - value_col_from) > temp_max)
+//			{
+//				temp_max = abs(temp_value - value_col_from);
+//				number_diff = j;
+//			}
+//		}
+//		if ( temp_max > eps )
+//		{			
+//			for ( int i = 0; i < step-2; i++ )
+//			{
+//				fin << setw(NUMBERS_WIDTH) << arr[number_diff][i];
+//			}
+//			fin << endl;
+//		}
+//		for ( int i = 0; i < step-2; i++ )
+//			{
+//				fin << setw(NUMBERS_WIDTH) << arr[number_col_to][i];
+//			}
+//		fin << endl;
+//		number_col_from = number_col_to;
+//	}
+//	fin.close(); 
+//	return 0;
+//}
